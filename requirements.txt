@@ -1,0 +1,7 @@
+torch 
+streamlit 
+transformers
+plotly
+numpy
+openpyxl
+streamlit-authenticator
