@@ -5,37 +5,15 @@ cookie:
 
 credentials:
   usernames:
-    admin:
+
+    manager:
       email: admin@gmail.com
-      name: Manager
+      name: GM
       password: $2b$12$nlrQuHtl6ClpCDRNTCb68e/EaydVww.7vFMsKQEb9goK1J5.ppyUC
-    roberto:
-      email: scalas.roberto@gmail.com
-      name: Roberto 
-      password: $2b$12$nlrQuHtl6ClpCDRNTCb68e/EaydVww.7vFMsKQEb9goK1J5.ppyUC
-    ivan:
+    
+    allears:
       email: admin@gmail.com
-      name: Ivan
-      password: $2b$12$nlrQuHtl6ClpCDRNTCb68e/EaydVww.7vFMsKQEb9goK1J5.ppyUC
-    stephen:
-      email: admin@gmail.com
-      name: Stephen
-      password: $2b$12$nlrQuHtl6ClpCDRNTCb68e/EaydVww.7vFMsKQEb9goK1J5.ppyUC
-    vera:
-      email: admin@gmail.com
-      name: Vera
-      password: $2b$12$nlrQuHtl6ClpCDRNTCb68e/EaydVww.7vFMsKQEb9goK1J5.ppyUC
-    dawn:
-      email: admin@gmail.com
-      name: Dawn
-      password: $2b$12$nlrQuHtl6ClpCDRNTCb68e/EaydVww.7vFMsKQEb9goK1J5.ppyUC
-    tas:
-      email: admin@gmail.com
-      name: Stephen
-      password: $2b$12$nlrQuHtl6ClpCDRNTCb68e/EaydVww.7vFMsKQEb9goK1J5.ppyUC
-    emma:
-      email: admin@gmail.com
-      name: Stephen
+      name: AllEars 
       password: $2b$12$nlrQuHtl6ClpCDRNTCb68e/EaydVww.7vFMsKQEb9goK1J5.ppyUC
       
 preauthorized:

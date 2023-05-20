@@ -28,7 +28,7 @@ def login(render_func: Callable[[str], None], config_file: str, section: str = '
 
         c2.write(f'Welcome *{name}*')
         # call the rendering function
-        render_func(name_db = f'pages/{name}.db', section = section)
+        render_func(name_db = f'pages/details.db', section = section)
 
     else: # no login attempt
         c1.warning('Please enter your username and password')

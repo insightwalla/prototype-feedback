@@ -371,11 +371,18 @@ def create_chart_totals_food_and_drinks(data_frame : pd.DataFrame,
 
    '''
    # get the food
-   food = data_frame['food'].tolist()
-   food = [item for sublist in food for item in sublist]
-   food = [f for f in food if f != '']
+   food = data_frame['menu_item'].tolist()
+   # split at the -
+   if len(food) > 0:
+      food = [item.split('-') for item in food if item != '']
+      food = [item for sublist in food for item in sublist]
+      food = [f for f in food if f != '']
+   else:
+      food = []
+   # flatten the list
+   
    food = Counter(food)
-   food = pd.DataFrame(food.items(), columns=['food', 'count'])
+   food = pd.DataFrame(food.items(), columns=['menu_item', 'count'])
 
    # get the drinks
    drinks = other_df['drink_item'].tolist()
@@ -393,7 +400,7 @@ def create_chart_totals_food_and_drinks(data_frame : pd.DataFrame,
 
    # create the food graph
    fig_food = go.Figure()
-   fig_food.add_trace(go.Bar(x=food['food'], y=food['count'], opacity=0.8))
+   fig_food.add_trace(go.Bar(x=food['menu_item'], y=food['count'], opacity=0.8))
    fig_food.update_layout(title_text='Food', 
                           xaxis={'categoryorder':'total descending'})
    fig_food.update_traces(text=food['count'],

@@ -1,4 +1,6 @@
 import sqlite3
+import streamlit as st
+import pandas as pd
 
 class Database_Manager:
    COLUMNS_FOR_SECTION = [
@@ -56,11 +58,65 @@ class Database_Manager:
       # close the connection
       self.conn.close()
 
+   def insert_multiple_with_id(self, rows):
+      self.cur.executemany(f"INSERT INTO reviews VALUES ({','.join(['?' for i in range(len(self.COLUMNS_FOR_SECTION) + 1)])})", rows)
+      self.conn.commit()
+      # close the connection
+      self.conn.close()
+
    def run_query(self, query):
       self.cur.execute(query)
       self.conn.commit()
       return self.cur.fetchall()
    
+   def create_database_for_each_venue(self):
+      # get all data 
+      list_of_venue = self.run_query("SELECT DISTINCT reservation_venue FROM reviews")
+      st.write(list_of_venue)
+      # get all the data for each venue
+      for venue in list_of_venue:
+         venue = venue[0]
+         data = self.run_query(f"SELECT * FROM reviews WHERE reservation_venue = '{venue}'")
+         # create a new database for each venue
+         db = Database_Manager(f'pages/{venue}.db')
+         db.insert_multiple_with_id(data)
+         db.conn.close()
+      #st.stop()
+
+   def get_main_db_from_venue(self):
+      # from each venue, get all the data
+      list_of_venue = self.run_query("SELECT DISTINCT reservation_venue FROM reviews")
+      # create a new database for each venue
+      data = []
+      for venue in list_of_venue:
+         venue = venue[0]
+         db = Database_Manager(f'pages/{venue}.db')
+         data.append(pd.DataFrame(db.view()))
+         db.conn.close()
+      # insert all the data into the main database
+      # transform into dataframe
+      data = pd.concat(data)
+      data.columns = ['idx'] + self.COLUMNS_FOR_CREATION
+      st.write(data)
+      return data
+
+   def modify_food_in_db(self, review, food):
+      sql = "UPDATE reviews SET menu_item = ? WHERE details = ?"
+      self.cur.execute(sql, (food, review))
+      self.conn.commit()
+
+   def modify_drink_in_db(self, review, drink):
+      sql = "UPDATE reviews SET drink_item = ? WHERE details = ?"
+      self.cur.execute(sql, (drink, review))
+      self.conn.commit()
+
+   def modify_label_in_db(self, review, label):
+      sql = "UPDATE reviews SET label = ? WHERE details = ?"
+      self.cur.execute(sql, (label, review))
+      self.conn.commit()
+      
+
+
 if __name__ == "__main__":
    db = Database_Manager('/Users/robertoscalas/Desktop/demo_working_version/pages/reviews.db')
 

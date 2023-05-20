@@ -154,12 +154,23 @@ class FeedBackHelper:
         self.walla =  ArtificialWalla()
         self.title = 'Feedback Reviewer'
         self.db_name = db_name
-        data = fetch_data_from_db(name=self.db_name)
-        if data is not None:
+        db = Database_Manager(self.db_name)
+
+        #data = fetch_data_from_db(name=self.db_name)
+        try:
+          data = db.get_main_db_from_venue()
+          if data is not None:
             self.df = pd.DataFrame(data, columns=['idx'] + Database_Manager.COLUMNS_FOR_CREATION)
-        else:
+                    
+          else:
+               df = create_data_from_uploaded_file()
+               self.df = self.process_data(df)
+               db.create_database_for_each_venue()
+        except:
             df = create_data_from_uploaded_file()
             self.df = self.process_data(df)
+            db.create_database_for_each_venue()
+
 
     def _preprocessing(self, data):
       '''
@@ -245,7 +256,7 @@ class FeedBackHelper:
       #1. Set Logo of the page
       st.image('pages/d.png', width=150)
       search_bar = st.text_input('Search', placeholder='Search term: "food, service, atmosphere"', key='HI')
-
+      restaurant_container = st.sidebar.container()
       expander_filters = st.sidebar.expander('Filtering Options', expanded=False)
 
       # 2. Search bar
@@ -291,10 +302,11 @@ class FeedBackHelper:
          st.stop()
       
       #6. Filter by restaurant name
-      restaurant_name = expander_filters.selectbox('Restaurant Name', ['All'] + self.df['Reservation: Venue'].unique().tolist(), index = 0)
+      restaurant_name = restaurant_container.selectbox('Restaurant Name', ['All'] + self.df['Reservation: Venue'].unique().tolist(), index = 0)
       # PROCESSSING DATA
       if restaurant_name != 'All':
-         self.df = self.df[self.df['Reservation: Venue'] == restaurant_name]
+         name_choosen_db = 'pages/' + restaurant_name + '.db'
+         self.df = pd.DataFrame(fetch_data_from_db(name=name_choosen_db), columns=['idx'] + Database_Manager.COLUMNS_FOR_CREATION)
 
       # 6.1. Split the dataframe in two, one with review and one without reviews
       self.df_with_review = self.df[self.df['Details'] != '']
@@ -337,23 +349,38 @@ class FeedBackHelper:
 
 
       # 9. Save to database or delete all data from database
-      if start_date == min_date and end_date == max_date and search_bar == '' and month == [] and day_of_the_week == [] and day_part == [] and key_words == [] and restaurant_name == 'All':
+      if start_date == min_date and end_date == max_date and search_bar == '' and month == [] and day_of_the_week == [] and day_part == [] and key_words == [] and restaurant_name != 'All':
          c1,c2 = st.sidebar.columns(2)
          
          button_delete_all = c2.button('Delete')
          button_save_all = c1.button('Save')
 
+
          if button_delete_all:
-            db = Database_Manager(self.db_name)
-            db.delete_all()
+            db_single_res = Database_Manager(name_choosen_db)
+            db_single_res.delete_all()
             st.info('Deleted all data from database')
 
          if button_save_all:
             self.to_plot = pd.concat([self.to_plot, self.df_without_review])
             #st.stop()
-            save_to_db(self.to_plot, Database_Manager.COLUMNS_FOR_CREATION, self.db_name)
+            save_to_db(self.to_plot, Database_Manager.COLUMNS_FOR_CREATION, name_choosen_db)
+
             st.success('Saved all data to database')
             # update container
+      elif start_date == min_date and end_date == max_date and search_bar == '' and month == [] and day_of_the_week == [] and day_part == [] and key_words == [] and restaurant_name == 'All':
+         button_delete_everything = st.sidebar.button('Delete All')
+         if button_delete_everything:
+
+            db_main = Database_Manager(self.db_name)
+            db_main.delete_all()
+            st.info('Deleted all data from database')
+            venues = self.df['Reservation: Venue'].unique().tolist()
+            for venue in venues:
+               name_choosen_db = 'pages/' + venue + '.db'
+               db_single_res = Database_Manager(name_choosen_db)
+               db_single_res.delete_all()
+            st.info('Deleted all data from database')
 
       # 10. Show all the graphs
       if len(self.df_with_review) > 0:
