@@ -62,6 +62,23 @@ def final_page(name_db: str, section: str):
                 st.write(sugg)
                 st.write('---')
 
+    # add a complete df 
+    with st.expander('View all data'):
+        st.write(data)
+
+    # create a download link
+    def get_table_download_link(data):
+        # rename the columns that have emoji
+        data = data.rename(columns={'👍': 'thumbs_up', '👎': 'thumbs_down', '💡': 'suggestions'})
+        # create a link to download the dataframe
+        csv = data.to_csv(index=False)
+        b64 = base64.b64encode(csv.encode()).decode()  # some strings <-> bytes conversions necessary here
+        href = f'<a href="data:file/csv;base64,{b64}" download="data.csv">Download csv file</a>'
+        return href
+
+
+    st.markdown(get_table_download_link(data), unsafe_allow_html=True)
+
 
 
 
