@@ -1,17 +1,34 @@
 from utils import *
 from graphs import *
 
+def get_data_from_database(db_manager: Database_Manager):
+    # 1. get the data from the database
+    reviews = db_manager.view()
+    df = pd.DataFrame(reviews, columns=['idx'] + db_manager.COLUMNS_FOR_SECTION)
+    if not reviews:
+        st.warning('No reviews found in the database')
+        st.stop()
+    return df
+
 def final_view(name_db, section = ''):
     '''
     This section will show a view that makes easy to choose the best and worst reviews
     '''
-    reviews = Database_Manager(db = name_db).view()
-    if len(reviews) == 0:
-        st.info('No reviews found in the database')
-        st.stop()
+    data = get_data_from_database(Database_Manager('pages/details.db'))
 
+    # create a dictionary containing {name_venue: pd.DataFrame}
+    venues = data['reservation_venue'].unique()
+    # transform to a list
+    venues = venues.tolist()
+    venues_dict = {venue: data[data['reservation_venue'] == venue] for venue in venues}
+    
+    selected_restaurant = st.sidebar.selectbox('Select Restaurant', list(venues_dict.keys()))
+    st.subheader(f"**{selected_restaurant}**")
+    name_db_choosen = f'pages/{selected_restaurant}.db'
+    df = get_data_from_database(Database_Manager(name_db_choosen))
+    
     # 1. get the data from the database
-    df = pd.DataFrame(reviews, columns=['idx'] + Database_Manager.COLUMNS_FOR_SECTION)
+    #df = pd.DataFrame(reviews, columns=['idx'] + Database_Manager.COLUMNS_FOR_SECTION)
 
     c1,c2 = st.columns(2)
     expander_best = c1.empty()
@@ -135,6 +152,6 @@ def final_view(name_db, section = ''):
     # rename the columns
     df = df.rename(columns={'👍_y': '👍', '👎_y': '👎', '💡_y': '💡'})
     df = df[Database_Manager.COLUMNS_FOR_SECTION]
-    st.write(df)
-    # save
-    save_to_db(df = df, cols= Database_Manager.COLUMNS_FOR_SECTION, name=name_db)
+    #st.write(df)
+    if st.sidebar.button('Save'):
+        save_to_db(df = df, cols= Database_Manager.COLUMNS_FOR_SECTION, name=name_db_choosen)

@@ -9,10 +9,9 @@ import plotly.graph_objects as go
 from utils import *
 def create_graphs_no_rev(df):
    df = df.copy()
-   st.write(df)
+   #st.write(df)
    scores = []
    columns_to_rescore = ['Feedback: Food Rating', 'Feedback: Drink Rating', 'Feedback: Service Rating', 'Feedback: Ambience Rating', 'Overall Rating']
-   st.write('Number of reviews without review: ', len(df))
    
    for _, row in df.iterrows():
       all_scores = row[columns_to_rescore].values
@@ -26,10 +25,13 @@ def create_graphs_no_rev(df):
    df_scores = pd.DataFrame(scores, columns=['Score'])
    # get average score
    avg_score = np.mean(df_scores['Score'])
-   st.write('Average score: ', avg_score)
 
    # create a average for each row
    df['Average Score'] = scores
+
+   col1, col2 = st.columns(2)
+   col1.metric("Average Score", round(avg_score, 2))
+   col2.metric("Total Reviews", len(df))
 
    fig = px.histogram(df_scores, x='Score', nbins=20, title='Distribution of scores')
    fig.update_layout(
@@ -38,7 +40,10 @@ def create_graphs_no_rev(df):
       bargap=0.2,
       bargroupgap=0.1
    )
-   st.plotly_chart(fig)
+
+
+   c1,c2 = st.columns(2)
+   c1.plotly_chart(fig, use_container_width=True)
 
    # group by day and get the average score
    df['date_for_filter'] = pd.to_datetime(df['date_for_filter'])
@@ -58,9 +63,10 @@ def create_graphs_no_rev(df):
    fig.add_trace(go.Scatter(x=df_day['date_for_filter'], y=[avg_score]*len(df_day), name='Average Score', mode='lines', marker_color='red'))
 
 
-   st.plotly_chart(fig)
+   c2.plotly_chart(fig, use_container_width=True)
+
    
-def create_graph_keywords_as_a_whole(df):
+def create_graph_keywords_as_a_whole(df, container = None):
    
    feat_for_key = ['Keywords', 'Sentiment']
    keywords_columns_sentiment = df[feat_for_key].copy()
@@ -78,7 +84,13 @@ def create_graph_keywords_as_a_whole(df):
       fig.add_trace(go.Bar(x=keywords_columns_sentiment[keywords_columns_sentiment['Sentiment'] == sentiment]['Keywords'], y=keywords_columns_sentiment[keywords_columns_sentiment['Sentiment'] == sentiment]['Count'], name=sentiment, opacity=0.5, marker_color = color[sentiment]))
    fig.update_layout(barmode='stack', xaxis={'categoryorder':'total descending'})
    fig.update_layout(xaxis_tickangle=-45)
-   st.plotly_chart(fig, use_container_width=True)
+   # no legend and title
+   fig.update_layout(showlegend=False)
+   
+   if container != None:
+      container.plotly_chart(fig, use_container_width=True)
+   else:
+      st.plotly_chart(fig, use_container_width=True)
 
 def create_timeseries_graph(df, container):
    # check that

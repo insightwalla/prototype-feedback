@@ -218,8 +218,9 @@ class FeedBackHelper:
       # fill na in reservation date with the date of the review
 
       final = self.to_plot
-
+      container_keywords = st.sidebar.container()
       create_timeseries_graph(final, self.main_c)
+      create_graph_keywords_as_a_whole(final, container = container_keywords)
 
       create_pie_chart(final)
    
@@ -235,7 +236,6 @@ class FeedBackHelper:
       
       create_container_for_each_sentiment(final)
 
-      create_graph_keywords_as_a_whole(final)
 
     def run(self):
       '''
@@ -261,6 +261,8 @@ class FeedBackHelper:
 
       # 2. Search bar
       self.main_c = st.container()
+
+      self.main_c_1, self.main_c_2 = self.main_c.columns(2)
       
       
       if search_bar != '':
@@ -321,7 +323,7 @@ class FeedBackHelper:
          self.df_with_review = self.df_with_review[self.df_with_review['Keywords'].str.contains('|'.join(key_words), case=False)]
 
 
-      with st.expander(f'Data without review: {len(self.df_without_review)}', expanded=False):
+      with st.expander(f'Empty Feedbacks: {len(self.df_without_review)}', expanded=False):
          create_graphs_no_rev(self.df_without_review)
 
       #7.2 Filter by Day Part
@@ -345,7 +347,9 @@ class FeedBackHelper:
 
       # 8. Show the dataframe with review
       # use sentiment to modify the checkbox
-      self.to_plot = st.experimental_data_editor(self.df_with_review)
+      self.to_plot = self.df_with_review
+
+      #st.write(self.to_plot)
 
 
       # 9. Save to database or delete all data from database
@@ -368,6 +372,7 @@ class FeedBackHelper:
 
             st.success('Saved all data to database')
             # update container
+            
       elif start_date == min_date and end_date == max_date and search_bar == '' and month == [] and day_of_the_week == [] and day_part == [] and key_words == [] and restaurant_name == 'All':
          button_delete_everything = st.sidebar.button('Delete All')
          if button_delete_everything:
@@ -385,3 +390,101 @@ class FeedBackHelper:
       # 10. Show all the graphs
       if len(self.df_with_review) > 0:
          self.plot()
+
+      index_to_modify = st.number_input('Index to modify', min_value=1, max_value=len(self.df_with_review), value=1, step=1, on_change=None, key=None)
+
+
+      with st.expander('Card', expanded=True):
+         row = self.df_with_review.iloc[index_to_modify-1]
+         date = row['date_for_filter']
+         venue = row['Reservation: Venue']
+         time  = row['Reservation: Time']
+         suggestion = row['Suggested to Friend']
+         rev = row['Details']
+
+         c1,c2,c3, c4 = st.columns(4)
+
+         c1.write(f'**Venue**: {venue}')
+
+         c2.write(f'**Date**: {date}')
+
+         c3.write(f'**Time**: {time}')
+
+         c4.write(f'**Suggested to Friend**: {suggestion}')
+
+         st.write(f'{rev}')
+
+         col1, col2, col3, col4 = st.columns(4)
+         # get sentiment 
+         sentiment = row['Sentiment']
+         options = ['POSITIVE', 'NEGATIVE', 'neutral']
+         index = options.index(sentiment)
+         select_sentiment =  col1.selectbox('Sentiment', ['POSITIVE', 'NEGATIVE', 'neutral'], index =  index)
+
+         thumbs_up_value = True if row['👍'] == '1' else False
+         thumbs_down_value = True if row['👎'] == '1' else False
+         idea_value = True if row['💡'] == '1' else False
+
+         select_thumbs_up = col2.checkbox('👍', value = thumbs_up_value)
+
+         select_thumbs_down = col3.checkbox('👎', value = thumbs_down_value)
+
+         select_suggestion = col4.checkbox('💡', value = idea_value)
+
+         columns_rating = ['Overall Rating', 'Feedback: Food Rating', 'Feedback: Drink Rating', 'Feedback: Service Rating', 'Feedback: Ambience Rating']
+
+         columns_for_input = ['Overall', 'Food', 'Drink', 'Service', 'Ambience']
+         columns_ = st.columns(len(columns_rating))
+
+
+         results = []
+         for i, col in enumerate(columns_rating):
+            value = float(row[col])
+            # transform the value into a string
+            value = int(value)
+
+            new_value = columns_[i].number_input(label=columns_for_input[i], min_value=0, max_value=10, value=value, step=1, format=None, key=None)
+            # add to the list
+            results.append(new_value)
+
+         # st.write(f'**Overall Rating**: {results[0]}')
+         # st.write(f'**Food Rating**: {results[1]}')
+         # st.write(f'**Drink Rating**: {results[2]}')
+         # st.write(f'**Service Rating**: {results[3]}')
+         # st.write(f'**Ambience Rating**: {results[4]}')
+
+
+         # now we need to save the data to the database
+         if st.button('Saving'):
+               # get restaurant name
+               restaurant_name = row['Reservation: Venue']
+               name_choosen_db = 'pages/' + restaurant_name + '.db'
+               db = Database_Manager(name_choosen_db)
+               db.modify_overall_rating_in_db(rev, results[0])
+               db.modify_food_rating_in_db(rev, results[1])
+               db.modify_drink_rating_in_db(rev, results[2])
+               db.modify_service_rating_in_db(rev, results[3])
+               db.modify_ambience_rating_in_db(rev, results[4])
+               db.modify_sentiment_in_db(rev, select_sentiment)
+
+               db.modify_thumbs_up_in_db(rev, select_thumbs_up)
+               db.modify_thumbs_down_in_db(rev, select_thumbs_down)
+
+               db.modify_is_suggestion(rev, select_suggestion)
+
+               st.success('Saved')
+
+
+
+
+
+
+
+
+
+         
+
+
+
+
+

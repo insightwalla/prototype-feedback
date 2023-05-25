@@ -62,7 +62,15 @@ class SectionTemplate:
     def run(self):
         col_right_graph, container_totals, container_editor, container_index, card_container = UI()    
         features = ['details', 'menu_item', 'drink_item', 'label']    
-        st.write(self.section_df[features])
+        temporary_df = self.section_df[features]
+        # change the names of the columns of the dataframe
+        temporary_df.columns = ['Review', 'Food', 'Drink', 'Label']
+        # transform food drink and label in lists
+        temporary_df['Food'] = temporary_df['Food'].apply(lambda x: x.split(' - ') if x != '' else [])
+        temporary_df['Drink'] = temporary_df['Drink'].apply(lambda x: x.split(' - ') if x != '' else [])
+        temporary_df['Label'] = temporary_df['Label'].apply(lambda x: x.split(' - ') if x != '' else [])
+        
+        st.dataframe(temporary_df, use_container_width=True)
         # add filter for restaurant 
         index_review_to_show = st.number_input('Review to show', min_value=1, max_value=len(self.section_df), value=1, step=1, on_change=None, key=None)    
         
@@ -86,10 +94,11 @@ class SectionTemplate:
 
         # 1. create the UI
         with st.expander('Card', expanded=True):
-            st.write(f"**{row['reservation_venue']}**")
-            st.write(f"**Reservation Date** {row['reservation_date']}" if row['reservation_date'] != '' else f"**Submission Date** {row['date']}")
-            st.write(f"**Time** {row['time'] if row['time'] != '' else 'Not specified'}")
-            st.write(f'**Suggested to Friends** {row["suggested_to_friend"]}')
+            c1,c2,c3,c4 = st.columns(4)
+            c1.write(f"**{row['reservation_venue']}**")
+            c2.write(f"**Reservation Date** {row['reservation_date']}" if row['reservation_date'] != '' else f"**Submission Date** {row['date']}")
+            c3.write(f"**Time** {row['time'] if row['time'] != '' else 'Not specified'}")
+            c4.write(f'**Suggested to Friends** {row["suggested_to_friend"]}')
             st.write(f"{rev}")
 
             c1,c2, c3 = st.columns(3)
@@ -112,9 +121,9 @@ class SectionTemplate:
             drink = prepare_food_drink_label(drink_selected)
             label = prepare_food_drink_label(labels)
 
-            st.write(f"**Label Food** {food}")
-            st.write(f"**Label Drink** {drink}")
-            st.write(f"**Label Sentiment** {label}")
+            #st.write(f"**Label Food** {food}")
+            #st.write(f"**Label Drink** {drink}")
+            #st.write(f"**Label Sentiment** {label}")
 
             #st.write(f'{type(food)}')
             #st.write(f'{type(drink)}')
