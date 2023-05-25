@@ -72,7 +72,7 @@ class Database_Manager:
    def create_database_for_each_venue(self):
       # get all data 
       list_of_venue = self.run_query("SELECT DISTINCT reservation_venue FROM reviews")
-      #st.write(list_of_venue)
+      st.write(list_of_venue)
       # get all the data for each venue
       for venue in list_of_venue:
          venue = venue[0]
@@ -97,7 +97,7 @@ class Database_Manager:
       # transform into dataframe
       data = pd.concat(data)
       data.columns = ['idx'] + self.COLUMNS_FOR_CREATION
-      #st.write(data)
+      st.write(data)
       return data
 
    def modify_food_in_db(self, review, food):
