@@ -57,7 +57,12 @@ class SectionTemplate:
         self.name_db_choosen = f'pages/{selected_restaurant}.db'
         self.df_selected = get_data_from_database(Database_Manager(self.name_db_choosen))
         self.section_df, self.keywords_list = get_section_df_and_keywords(self.df_selected, self.section)
-        self.run()
+        # is the dataframe empty?
+        if self.section_df.empty:
+            st.warning(f'No reviews relative to {self.section} in {selected_restaurant}')
+            st.stop()
+        else:
+            self.run()
 
     def run(self):
         col_right_graph, container_totals, container_editor, container_index, card_container = UI()    
