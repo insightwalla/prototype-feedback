@@ -150,6 +150,30 @@ def _get_day_part(hour: str):
        time_part = 'Late Night'
     return time_part
 
+def get_day_part(hour: str):
+    '''
+    This function takes the hour as a `str` and returns the day part
+
+    ---
+      Parameters:
+         hour: str
+            the hour of the day
+
+      Returns:
+         the day part (Breakfast, Lunch, Dinner, Late Night)
+    '''
+    if hour == 'Not Specified' or hour == '' or hour == 'nan':
+       return 'Not Specified'
+    elif 7 <= int(hour) < 12:
+        time_part = 'Breakfast'
+    elif 12 <= int(hour) < 16:
+        time_part = 'Lunch'
+    elif 16 <= int(hour) < 20:
+        time_part = 'Dinner'
+    else:
+       time_part = 'Late Night'
+    return time_part
+
 def rescoring(df):
    '''
    This function takes the dataframe and rescoring the values of the columns that are related to the ratings
