@@ -36,7 +36,7 @@ def final_page(name_db: str, section: str):
           
             # now create a pie chart
             fig = go.Figure(data=[go.Pie(labels=['Done', 'Not Done'], values=[tot_done, tot_not_done])])
-            fig.update_layout(title_text=f'{venue} - {tot_done}/{tot_} ({round(tot_done/tot_*100, 2)}%)')
+            fig.update_layout(title_text=message)
             # green for done, red for not done
             fig.update_traces(marker_colors=['green', 'red'])
             # set opacity
