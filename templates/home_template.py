@@ -426,11 +426,11 @@ class FeedBackHelper:
          select_sentiment =  col1.selectbox('Sentiment', ['POSITIVE', 'NEGATIVE', 'neutral'], index = index, key = f'i_{index_to_modify}')
 
 
-         select_thumbs_up = col2.checkbox('👍', value = value_for_thumbs_up, key = f't_u {index_to_modify}')
+         select_thumbs_up = col2.checkbox('👍', value = is_favorite, key = f't_u {index_to_modify}')
 
-         select_thumbs_down = col3.checkbox('👎', value = value_for_thumbs_down, key = f't_d {index_to_modify}')
+         select_thumbs_down = col3.checkbox('👎', value = is_not_favorite, key = f't_d {index_to_modify}')
 
-         select_suggestion = col4.checkbox('💡', value = value_for_suggestion, key = f't_s {index_to_modify}')
+         select_suggestion = col4.checkbox('💡', value = is_suggestion, key = f't_s {index_to_modify}')
 
          columns_rating = ['Overall Rating', 'Feedback: Food Rating', 'Feedback: Drink Rating', 'Feedback: Service Rating', 'Feedback: Ambience Rating']
 
