@@ -57,8 +57,8 @@ def final_view(name_db, section = ''):
     c_2.subheader('👎 Worst reviews')
     c_1.subheader('👍 Best reviews')
 
-    worst_edit = c_2.experimental_data_editor(worst_reviews[cols_worst])
-    best_edit = c_1.experimental_data_editor(best_reviews[cols_best])
+    worst_edit = c_2.data_editor(worst_reviews[cols_worst])
+    best_edit = c_1.data_editor(best_reviews[cols_best])
 
     with expander_best:
         best = best_edit[best_edit['👍'] == True]
