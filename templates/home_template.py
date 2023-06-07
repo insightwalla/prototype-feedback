@@ -423,7 +423,7 @@ class FeedBackHelper:
          sentiment = row['Sentiment']
          options = ['POSITIVE', 'NEGATIVE', 'neutral']
          index = options.index(sentiment)
-         select_sentiment =  col1.selectbox('Sentiment', ['POSITIVE', 'NEGATIVE', 'neutral'], index = f'i_{index_to_modify}')
+         select_sentiment =  col1.selectbox('Sentiment', ['POSITIVE', 'NEGATIVE', 'neutral'], index = index, key = f'i_{index_to_modify}')
 
 
          select_thumbs_up = col2.checkbox('👍', value = value_for_thumbs_up, key = f't_u {index_to_modify}')
