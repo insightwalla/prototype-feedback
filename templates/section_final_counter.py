@@ -28,8 +28,11 @@ def final_page(name_db: str, section: str):
         # get suggestions 
         suggestions = venue_data[venue_data['💡'] == '1']
 
-        
-        with st.expander(venue + f' - {tot_done}/{tot_} ({round(tot_done/tot_*100, 2)}%)'):
+        try:
+            message = venue + f' - {tot_done}/{tot_} ({round(tot_done/tot_*100, 2)}%)'
+        except:
+            message = venue
+        with st.expander(message):
           
             # now create a pie chart
             fig = go.Figure(data=[go.Pie(labels=['Done', 'Not Done'], values=[tot_done, tot_not_done])])
