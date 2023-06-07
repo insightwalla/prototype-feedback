@@ -402,6 +402,9 @@ class FeedBackHelper:
          time  = row['Reservation: Time']
          suggestion = row['Suggested to Friend']
          rev = row['Details']
+         is_favorite = row['👍'] == '1'
+         is_not_favorite = row['👎'] == '1'
+         is_suggestion = row['💡'] == '1'
 
          c1,c2,c3, c4 = st.columns(4)
 
@@ -422,15 +425,12 @@ class FeedBackHelper:
          index = options.index(sentiment)
          select_sentiment =  col1.selectbox('Sentiment', ['POSITIVE', 'NEGATIVE', 'neutral'], index =  index)
 
-         thumbs_up_value = True if row['👍'] == '1' else False
-         thumbs_down_value = True if row['👎'] == '1' else False
-         idea_value = True if row['💡'] == '1' else False
 
-         select_thumbs_up = col2.checkbox('👍', value = thumbs_up_value)
+         select_thumbs_up = col2.checkbox('👍', value = is_favorite)
 
-         select_thumbs_down = col3.checkbox('👎', value = thumbs_down_value)
+         select_thumbs_down = col3.checkbox('👎', value = is_not_favorite)
 
-         select_suggestion = col4.checkbox('💡', value = idea_value)
+         select_suggestion = col4.checkbox('💡', value = is_suggestion)
 
          columns_rating = ['Overall Rating', 'Feedback: Food Rating', 'Feedback: Drink Rating', 'Feedback: Service Rating', 'Feedback: Ambience Rating']
 
