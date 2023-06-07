@@ -444,7 +444,7 @@ class FeedBackHelper:
             # transform the value into a string
             value = int(value)
 
-            new_value = columns_[i].number_input(label=columns_for_input[i], min_value=0, max_value=10, value=value, step=1, format=None, key=f'rate{i} - {index_to_modify}'
+            new_value = columns_[i].number_input(label=columns_for_input[i], min_value=0, max_value=10, value=value, step=1, format=None, key=f'rate{i} - {index_to_modify}')
             # add to the list
             results.append(new_value)
 
