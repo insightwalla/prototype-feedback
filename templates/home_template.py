@@ -103,6 +103,7 @@ def create_data_from_uploaded_file():
          # add Reservation: Venue when empty (name of the restaurant)
          venue = df["Reservation: Venue"].unique().tolist()
          venue = [v for v in venue if str(v) != 'nan'][0]
+         venue = str(venue).replace("'", "")
          df["Reservation: Venue"] = venue
          # add all the columns that we are going to use
          df["Label: Dishoom"] = ["" for i in range(len(df))]
