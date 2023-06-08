@@ -100,7 +100,7 @@ def create_data_from_uploaded_file():
       # 2. Read all the files and store them in a list
       dfs = [pd.read_excel(f) for f in files]
 
-      individual_step = 100//len(dfs)
+      individual_step = 95//len(dfs)
       progress_text = 'Uploading Data'
       my_bar = st.progress(0, text=progress_text)
 
@@ -130,6 +130,8 @@ def create_data_from_uploaded_file():
          df['date_for_filter'] = df.apply(lambda x: str(pd.to_datetime(x['Date Submitted']).date()) if x['Reservation: Date'] in empty else str(pd.to_datetime(x['Reservation: Date']).date()), axis=1)
          df['Suggested to Friend'] = df['Feedback: Recommend to Friend'].apply(lambda x: x if x == 'Yes' or x == 'No' else 'Not Specified')
       
+      my_bar.progress(95, text='Now Processing the data')
+
       # concat the dfs into one
       df = pd.concat(dfs, ignore_index=True)
 
@@ -151,6 +153,8 @@ def create_data_from_uploaded_file():
 
       # now we have to concat the two dfs
       df = pd.concat([df_not_empty, df_empty], ignore_index=True)
+      # add the last five to the bar
+      my_bar.progress(100, text='All done')
       return df
       
 # main class
