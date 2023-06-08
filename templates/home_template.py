@@ -100,11 +100,12 @@ def create_data_from_uploaded_file():
       # 2. Read all the files and store them in a list
       dfs = [pd.read_excel(f) for f in files]
 
-      element_for_counter = st.container()
+      individual_step = 100/len(dfs)
+      progress_text = 'Uploading Data'
+      my_bar = st.progress(0, text=progress_text)
 
       for i, df in enumerate(dfs):
-         element_for_counter.write(f'{i+1}/{len(dfs)}')
-         
+         my_bar.progress(((i+1) * individual_step), text=progress_text)
          # 3. Prepare the dataframes: 
          # add Reservation: Venue when empty (name of the restaurant)
          venue = df["Reservation: Venue"].unique().tolist()
