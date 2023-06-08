@@ -5,6 +5,7 @@ from parameters import *
 from graphs import *
 from database import Database_Manager
 from ai_classifier import ArtificialWalla
+import time
 
 
 # DB connection
@@ -98,9 +99,13 @@ def create_data_from_uploaded_file():
       
       # 2. Read all the files and store them in a list
       dfs = [pd.read_excel(f) for f in files]
+
+      progress_text = "Operation in progress. Please wait."
+      my_bar = st.progress(0, text=progress_text)
+
       for i, df in enumerate(dfs):
-         
-         st.write(f'{i+1}/{len(dfs)}')
+         my_bar.progress(i + 1, text=progress_text)
+         #st.write(f'{i+1}/{len(dfs)}')
 
          # 3. Prepare the dataframes: 
          # add Reservation: Venue when empty (name of the restaurant)
