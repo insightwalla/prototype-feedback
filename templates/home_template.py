@@ -98,7 +98,10 @@ def create_data_from_uploaded_file():
       
       # 2. Read all the files and store them in a list
       dfs = [pd.read_excel(f) for f in files]
-      for df in dfs:
+      for i, df in enumerate(dfs):
+         
+         st.write(f'{i+1}/{len(dfs)}')
+
          # 3. Prepare the dataframes: 
          # add Reservation: Venue when empty (name of the restaurant)
          venue = df["Reservation: Venue"].unique().tolist()
