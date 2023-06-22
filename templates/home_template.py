@@ -147,9 +147,9 @@ def create_data_from_uploaded_file():
       # drop duplicates:
       # the problem is that the details are not the same but the stripped details are the same 
       # (stripped details are the details without spaces and new lines)
-      df_not_empty['Stripped_det'] = df_not_empty['Details'].apply(lambda x: x.replace(' ', '').replace('\n', '').replace('\r', '').strip())
-      df_not_empty = df_not_empty.drop_duplicates(subset=['Stripped_det'])
-      df_not_empty = df_not_empty.drop(columns=['Stripped_det'])
+      #df_not_empty['Stripped_det'] = df_not_empty['Details'].apply(lambda x: x.replace(' ', '').replace('\n', '').replace('\r', '').strip())
+      #df_not_empty = df_not_empty.drop_duplicates(subset=['Stripped_det'])
+      #df_not_empty = df_not_empty.drop(columns=['Stripped_det'])
 
       # now we have to concat the two dfs
       df = pd.concat([df_not_empty, df_empty], ignore_index=True)
